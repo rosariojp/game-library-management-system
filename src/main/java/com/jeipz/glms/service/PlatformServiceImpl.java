@@ -2,8 +2,10 @@ package com.jeipz.glms.service;
 
 import com.jeipz.glms.exception.PlatformNotFoundException;
 import com.jeipz.glms.mapper.PlatformMapper;
+import com.jeipz.glms.model.Game;
 import com.jeipz.glms.model.Platform;
 import com.jeipz.glms.model.input.PlatformInput;
+import com.jeipz.glms.repository.GameRepository;
 import com.jeipz.glms.repository.PlatformRepository;
 import com.jeipz.glms.validation.PlatformValidator;
 import org.springframework.data.domain.Page;
@@ -18,11 +20,13 @@ import java.util.UUID;
 public class PlatformServiceImpl implements PlatformService {
 
     private final PlatformRepository platformRepository;
+    private final GameRepository gameRepository;
     private final PlatformMapper platformMapper;
     private final PlatformValidator platformValidator;
 
-    public PlatformServiceImpl(PlatformRepository platformRepository, PlatformMapper platformMapper, PlatformValidator platformValidator) {
+    public PlatformServiceImpl(PlatformRepository platformRepository, GameRepository gameRepository, PlatformMapper platformMapper, PlatformValidator platformValidator) {
         this.platformRepository = platformRepository;
+        this.gameRepository = gameRepository;
         this.platformMapper = platformMapper;
         this.platformValidator = platformValidator;
     }
@@ -66,7 +70,15 @@ public class PlatformServiceImpl implements PlatformService {
     public String deletePlatform(UUID id) {
         Platform platform = platformRepository.findById(id)
                 .orElseThrow(PlatformNotFoundException::new);
+        removeAssociationFromGames(platform);
         platformRepository.delete(platform);
         return "Platform deleted with id -> " + id;
+    }
+
+    private void removeAssociationFromGames(Platform platform) {
+        for (Game game : platform.getGames()) {
+            game.getPlatforms().remove(platform);
+            gameRepository.save(game);
+        }
     }
 }

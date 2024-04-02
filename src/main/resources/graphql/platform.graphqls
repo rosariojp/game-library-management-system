@@ -2,6 +2,7 @@ type Platform {
     id: ID!
     name: String!
     description: String
+    games: [Game]
 }
 
 input PlatformInput {

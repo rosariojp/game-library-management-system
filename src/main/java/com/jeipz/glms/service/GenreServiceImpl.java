@@ -3,8 +3,10 @@ package com.jeipz.glms.service;
 import com.jeipz.glms.exception.GenreNotFoundException;
 import com.jeipz.glms.exception.PlatformNotFoundException;
 import com.jeipz.glms.mapper.GenreMapper;
+import com.jeipz.glms.model.Game;
 import com.jeipz.glms.model.Genre;
 import com.jeipz.glms.model.input.GenreInput;
+import com.jeipz.glms.repository.GameRepository;
 import com.jeipz.glms.repository.GenreRepository;
 import com.jeipz.glms.validation.GenreValidator;
 import org.springframework.data.domain.Page;
@@ -19,11 +21,13 @@ import java.util.UUID;
 public class GenreServiceImpl implements GenreService {
 
     private final GenreRepository genreRepository;
+    private final GameRepository gameRepository;
     private final GenreMapper genreMapper;
     private final GenreValidator genreValidator;
 
-    public GenreServiceImpl(GenreRepository genreRepository, GenreMapper genreMapper, GenreValidator genreValidator) {
+    public GenreServiceImpl(GenreRepository genreRepository, GameRepository gameRepository, GenreMapper genreMapper, GenreValidator genreValidator) {
         this.genreRepository = genreRepository;
+        this.gameRepository = gameRepository;
         this.genreMapper = genreMapper;
         this.genreValidator = genreValidator;
     }
@@ -66,7 +70,15 @@ public class GenreServiceImpl implements GenreService {
     public String deleteGenre(UUID id) {
         Genre genre = genreRepository.findById(id)
                 .orElseThrow(GenreNotFoundException::new);
+        removeAssociationFromGames(genre);
         genreRepository.delete(genre);
         return "Genre deleted with id -> " + id;
+    }
+
+    private void removeAssociationFromGames(Genre genre) {
+        for (Game game : genre.getGames()) {
+            game.getGenres().remove(genre);
+            gameRepository.save(game);
+        }
     }
 }
