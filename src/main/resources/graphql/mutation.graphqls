@@ -1,0 +1,14 @@
+type Mutation {
+    # Game
+    addGame(gameInput: GameInput!): Game
+    updateGame(id: ID!, gameInput: GameInput!): Game
+    deleteGame(id: ID!): String
+#    # Genre
+    addGenre(genreInput: GenreInput!): Genre
+    updateGenre(id: ID!, genreInput: GenreInput!): Genre
+    deleteGenre(id: ID!): String
+    # Platform
+    addPlatform(platformInput: PlatformInput!): Platform
+    updatePlatform(id: ID!, platformInput: PlatformInput!): Platform
+    deletePlatform(id: ID!): String
+}

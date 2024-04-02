@@ -1,0 +1,8 @@
+type Genre {
+    id: ID!
+    name: String!
+}
+
+input GenreInput {
+    name: String!
+}

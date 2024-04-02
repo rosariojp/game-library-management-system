@@ -1,0 +1,20 @@
+scalar Date
+
+type Game {
+    id: ID!
+    title: String!
+    description: String
+    releaseDate: Date
+    price: Float!
+    genres: [Genre]
+    platforms: [Platform]
+}
+
+input GameInput {
+    title: String!
+    description: String
+    releaseDate: Date
+    price: Float!
+    genreIds: [ID]
+    platformIds: [ID]
+}

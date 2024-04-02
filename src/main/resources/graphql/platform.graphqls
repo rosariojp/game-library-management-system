@@ -1,0 +1,10 @@
+type Platform {
+    id: ID!
+    name: String!
+    description: String
+}
+
+input PlatformInput {
+    name: String!
+    description: String
+}
