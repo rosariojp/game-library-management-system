@@ -1,7 +1,6 @@
 package com.jeipz.glms.service;
 
 import com.jeipz.glms.exception.GenreNotFoundException;
-import com.jeipz.glms.exception.PlatformNotFoundException;
 import com.jeipz.glms.mapper.GenreMapper;
 import com.jeipz.glms.model.Game;
 import com.jeipz.glms.model.Genre;
@@ -35,7 +34,7 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public Page<Genre> getAllGenres(int page, int size) {
         String field = "name";
-        Sort sort = Sort.by(Sort.Order.asc(field));
+        Sort sort = Sort.by(field).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
         return genreRepository.findAll(pageable);
     }
@@ -43,7 +42,7 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public Genre getGenreById(UUID id) {
         return genreRepository.findById(id)
-                .orElseThrow(PlatformNotFoundException::new);
+                .orElseThrow(GenreNotFoundException::new);
     }
 
     @Override
