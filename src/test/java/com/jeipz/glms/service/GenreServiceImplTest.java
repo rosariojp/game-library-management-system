@@ -237,11 +237,8 @@ class GenreServiceImplTest {
         Genre genre = Genre.builder()
                 .id(id)
                 .name(GENRE_NAME)
+                .games(createGameSet(gameCount))
                 .build();
-        Set<Game> gameSet = createGameSet(gameCount).stream()
-                .peek(i -> i.getGenres().add(genre))
-                .collect(Collectors.toSet());
-        genre.setGames(gameSet);
 
         when(genreRepository.findById(id)).thenReturn(Optional.of(genre));
         doNothing().when(genreRepository).delete(genre);
