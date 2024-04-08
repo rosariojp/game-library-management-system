@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class GenreValidatorTest {
 
     public static final String GENRE_NAME = "RPG";
+
     @InjectMocks
     private GenreValidator genreValidator;
 

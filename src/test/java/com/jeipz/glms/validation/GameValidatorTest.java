@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class GameValidatorTest {
 
     private static final String TITLE_NAME = "Dragon Quest XI S";
+
     @InjectMocks
     private GameValidator gameValidator;
 

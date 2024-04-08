@@ -18,7 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class PlatformValidatorTest {
 
     private static final String PLATFORM_NAME = "PS5";
+
     private static final String PLATFORM_DESCRIPTION = "Playstation 5";
+
     @InjectMocks
     private PlatformValidator platformValidator;
 
