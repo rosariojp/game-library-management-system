@@ -34,7 +34,7 @@ public class PlatformServiceImpl implements PlatformService {
     @Override
     public Page<Platform> getAllPlatforms(int page, int size) {
         String field = "name";
-        Sort sort = Sort.by(Sort.Order.asc(field));
+        Sort sort = Sort.by(field).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
         return platformRepository.findAll(pageable);
     }
