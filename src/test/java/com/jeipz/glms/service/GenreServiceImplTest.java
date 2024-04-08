@@ -29,7 +29,9 @@ import static org.mockito.Mockito.*;
 class GenreServiceImplTest {
 
     public static final String GENRE_NAME = "Arcade";
+
     public static final String GENRE_NAME_UPDATE = "Fighting";
+
     public static final String GENRE_NAME_FIELD = "name";
 
     @InjectMocks
