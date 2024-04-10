@@ -4,3 +4,17 @@ type PageResponseOfGenre {
     totalPages: Int!
     totalElements: Int!
 }
+
+type PageResponseOfPlatform {
+    content: [Platform]!
+    currentPage: Int!
+    totalPages: Int!
+    totalElements: Int!
+}
+
+type PageResponseOfGame {
+    content: [Game]!
+    currentPage: Int!
+    totalPages: Int!
+    totalElements: Int!
+}

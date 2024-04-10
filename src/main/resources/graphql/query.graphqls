@@ -1,11 +1,11 @@
 type Query {
     # Game
-    getAllGames(page: Int!, size: Int!): [Game]
+    getAllGames(page: Int!, size: Int!): PageResponseOfGame
     getGameById(id: ID!): Game
     # Genre
     getAllGenres(page: Int!, size: Int!): PageResponseOfGenre
     getGenreById(id: ID!): Genre
     # Platform
-    getAllPlatforms(page: Int!, size: Int!): [Platform]
+    getAllPlatforms(page: Int!, size: Int!): PageResponseOfPlatform
     getPlatformById(id: ID!): Platform
 }
