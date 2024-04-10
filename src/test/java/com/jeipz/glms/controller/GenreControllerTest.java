@@ -209,9 +209,7 @@ public class GenreControllerTest {
                 .execute()
                 .path("deleteGenre")
                 .entity(String.class)
-                .satisfies(result -> {
-                    assertEquals(message, result);
-                });
+                .satisfies(result -> assertEquals(message, result));
     }
 
 }
