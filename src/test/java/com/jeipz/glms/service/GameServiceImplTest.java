@@ -179,7 +179,9 @@ class GameServiceImplTest {
                 () -> assertEquals(game.getTitle(), savedGame.getTitle()),
                 () -> assertEquals(game.getDescription(), savedGame.getDescription()),
                 () -> assertEquals(game.getReleaseDate(), savedGame.getReleaseDate()),
-                () -> assertEquals(game.getPrice(), savedGame.getPrice()));
+                () -> assertEquals(game.getPrice(), savedGame.getPrice()),
+                () -> assertEquals(game.getGenres(), savedGame.getGenres()),
+                () -> assertEquals(game.getPlatforms(), savedGame.getPlatforms()));
 
         verify(gameValidator, times(1)).validateTitle(gameInput.title());
         verify(gameMapper, times(1)).apply(gameInput);
@@ -203,6 +205,137 @@ class GameServiceImplTest {
 
         verify(gameValidator, times(1))
                 .validateTitle(gameInput.title());
+    }
+
+    @Test
+    public void updateGame_withUpdates_Successful() {
+        UUID id = UUID.randomUUID();
+        List<Genre> genres = createGenreList();
+        List<Platform> platforms = createPlatformList();
+        List<UUID> genreIds = genres.stream().map(Genre::getId).toList();
+        List<UUID> platformIds = platforms.stream().map(Platform::getId).toList();
+
+        GameInput gameInput = new GameInput(GAME_TITLE,
+                GAME_DESCRIPTION,
+                LocalDate.of(2024, 12, 30),
+                new BigDecimal("59.99"),
+                genreIds,
+                platformIds);
+
+        Game oldGame = Game.builder()
+                .id(id)
+                .title("Test title")
+                .description("Test description")
+                .price(new BigDecimal("12.21"))
+                .releaseDate(LocalDate.of(2024, 12, 31))
+                .build();
+
+        Game updatedGame = Game.builder()
+                .id(id)
+                .title(gameInput.title())
+                .description(gameInput.description())
+                .releaseDate(gameInput.releaseDate())
+                .price(gameInput.price())
+                .genres(new HashSet<>(genres))
+                .platforms(new HashSet<>(platforms))
+                .build();
+
+        when(gameRepository.findById(id)).thenReturn(Optional.of(oldGame));
+        doNothing().when(gameValidator).validateTitle(gameInput.title());
+        when(gameRepository.save(any(Game.class))).thenReturn(updatedGame);
+
+        Game savedGame = gameService.updateGame(id, gameInput);
+
+        assertAll("updatedGame must be equal to savedGame",
+                () -> assertEquals(updatedGame.getId(), savedGame.getId()),
+                () -> assertEquals(updatedGame.getTitle(), savedGame.getTitle()),
+                () -> assertEquals(updatedGame.getDescription(), savedGame.getDescription()),
+                () -> assertEquals(updatedGame.getReleaseDate(), savedGame.getReleaseDate()),
+                () -> assertEquals(updatedGame.getPrice(), savedGame.getPrice()));
+
+        verify(gameRepository, times(1)).findById(id);
+        verify(gameValidator, times(1)).validateTitle(gameInput.title());
+        verify(genreRepository, times(1)).findAllById(genreIds);
+        verify(platformRepository, times(1)).findAllById(platformIds);
+        verify(gameRepository, times(1)).save(any(Game.class));
+    }
+
+    @Test
+    public void updateGame_noChanges_Successful() {
+        UUID id = UUID.randomUUID();
+        GameInput gameInput = new GameInput(GAME_TITLE,
+                GAME_DESCRIPTION,
+                LocalDate.of(2024, 12, 30),
+                new BigDecimal("59.99"),
+                null,
+                null);
+
+        Game game = Game.builder()
+                .id(id)
+                .title(gameInput.title())
+                .description(gameInput.description())
+                .price(gameInput.price())
+                .releaseDate(gameInput.releaseDate())
+                .build();
+
+        when(gameRepository.findById(id)).thenReturn(Optional.of(game));
+        when(gameRepository.save(game)).thenReturn(game);
+
+        Game savedGame = gameService.updateGame(id, gameInput);
+
+        assertAll("game must be equal to savedGame",
+                () -> assertEquals(game.getId(), savedGame.getId()),
+                () -> assertEquals(game.getTitle(), savedGame.getTitle()),
+                () -> assertEquals(game.getDescription(), savedGame.getDescription()),
+                () -> assertEquals(game.getReleaseDate(), savedGame.getReleaseDate()),
+                () -> assertEquals(game.getPrice(), savedGame.getPrice()));
+
+        verify(gameRepository, times(1)).findById(id);
+        verify(gameRepository, times(1)).save(game);
+    }
+
+    @Test
+    public void updateGame_NotFound() {
+        UUID id = UUID.randomUUID();
+        doThrow(GameNotFoundException.class)
+                .when(gameRepository).findById(id);
+
+        assertThrows(GameNotFoundException.class,
+                () -> gameService.updateGame(id, any(GameInput.class)));
+
+        verify(gameRepository, times(1)).findById(id);
+    }
+
+    @Test
+    public void deleteGame_Successful() {
+        UUID id = UUID.randomUUID();
+        Game game = Game.builder()
+                .id(id)
+                .title(GAME_TITLE)
+                .price(new BigDecimal("12.99"))
+                .build();
+
+        when(gameRepository.findById(id)).thenReturn(Optional.of(game));
+        doNothing().when(gameRepository).delete(game);
+
+        String message = gameService.deleteGame(id);
+
+        assertEquals("Game deleted with id -> " + id, message);
+
+        verify(gameRepository, times(1)).findById(id);
+        verify(gameRepository, times(1)).delete(game);
+    }
+
+    @Test
+    public void deleteGame_NotFound() {
+        UUID id = UUID.randomUUID();
+
+        doThrow(GameNotFoundException.class).when(gameRepository).findById(id);
+
+        assertThrows(GameNotFoundException.class,
+                () -> gameService.deleteGame(id));
+
+        verify(gameRepository, times(1)).findById(id);
     }
 
 }
