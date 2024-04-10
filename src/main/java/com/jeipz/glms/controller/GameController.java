@@ -2,9 +2,9 @@ package com.jeipz.glms.controller;
 
 import com.jeipz.glms.model.Game;
 import com.jeipz.glms.model.input.GameInput;
+import com.jeipz.glms.model.response.PageResponse;
 import com.jeipz.glms.service.GameService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -22,8 +22,8 @@ public class GameController {
     }
 
     @QueryMapping
-    public Page<Game> getAllGames(@Argument int page,
-                                  @Argument int size) {
+    public PageResponse<Game> getAllGames(@Argument int page,
+                                          @Argument int size) {
         return gameService.getAllGames(page, size);
     }
 

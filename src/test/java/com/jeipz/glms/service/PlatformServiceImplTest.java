@@ -2,10 +2,12 @@ package com.jeipz.glms.service;
 
 import com.jeipz.glms.exception.PlatformAlreadyExistsException;
 import com.jeipz.glms.exception.PlatformNotFoundException;
+import com.jeipz.glms.mapper.PageResponseMapper;
 import com.jeipz.glms.mapper.PlatformMapper;
 import com.jeipz.glms.model.Game;
 import com.jeipz.glms.model.Platform;
 import com.jeipz.glms.model.input.PlatformInput;
+import com.jeipz.glms.model.response.PageResponse;
 import com.jeipz.glms.repository.GameRepository;
 import com.jeipz.glms.repository.PlatformRepository;
 import com.jeipz.glms.validation.PlatformValidator;
@@ -54,6 +56,9 @@ class PlatformServiceImplTest {
     @Mock
     private GameRepository gameRepository;
 
+    @Mock
+    private PageResponseMapper<Platform> pageResponseMapper;
+
     private List<Platform> createPlatformList() {
         return IntStream.range(0, SIZE)
                 .mapToObj(i -> Platform.builder()
@@ -68,18 +73,27 @@ class PlatformServiceImplTest {
         Pageable pageable = PageRequest.of(PAGE, SIZE, SORT);
         List<Platform> platforms = createPlatformList();
         Page<Platform> platformPages = new PageImpl<>(platforms);
+        PageResponse<Platform> platformPageResponse = new PageResponse<>(
+            platformPages.getContent(),
+            platformPages.getNumber() + 1,
+            platformPages.getTotalPages(),
+            platformPages.getTotalElements());
 
         when(platformRepository.findAll(pageable))
                 .thenReturn(platformPages);
+        when(pageResponseMapper.apply(platformPages))
+                .thenReturn(platformPageResponse);
 
-        Page<Platform> fetchedPlatformPages = platformService.getAllPlatforms(PAGE, SIZE);
+        PageResponse<Platform> fetchedPlatformPages = platformService.getAllPlatforms(PAGE, SIZE);
 
         assertAll("Should return pages of platform in ascending order",
-                () -> assertEquals(platformPages, fetchedPlatformPages),
-                () -> assertEquals(PAGE, fetchedPlatformPages.getNumber()),
-                () -> assertEquals(SIZE, fetchedPlatformPages.getSize()));
+                () -> assertEquals(platformPageResponse.content(), fetchedPlatformPages.content()),
+                () -> assertEquals(platformPageResponse.currentPage(), fetchedPlatformPages.currentPage()),
+                () -> assertEquals(platformPageResponse.totalPages(), fetchedPlatformPages.totalPages()),
+                () -> assertEquals(platformPageResponse.totalElements(), fetchedPlatformPages.totalElements()));
 
         verify(platformRepository, times(1)).findAll(pageable);
+        verify(pageResponseMapper, times(1)).apply(platformPages);
     }
 
     @Test

@@ -2,9 +2,9 @@ package com.jeipz.glms.controller;
 
 import com.jeipz.glms.model.Platform;
 import com.jeipz.glms.model.input.PlatformInput;
+import com.jeipz.glms.model.response.PageResponse;
 import com.jeipz.glms.service.PlatformService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -22,8 +22,8 @@ public class PlatformController {
     }
 
     @QueryMapping
-    public Page<Platform> getAllPlatforms(@Argument int page,
-                                          @Argument int size) {
+    public PageResponse<Platform> getAllPlatforms(@Argument int page,
+                                                  @Argument int size) {
         return platformService.getAllPlatforms(page, size);
     }
 

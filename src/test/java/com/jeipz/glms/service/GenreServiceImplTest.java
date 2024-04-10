@@ -3,9 +3,11 @@ package com.jeipz.glms.service;
 import com.jeipz.glms.exception.GenreAlreadyExistsException;
 import com.jeipz.glms.exception.GenreNotFoundException;
 import com.jeipz.glms.mapper.GenreMapper;
+import com.jeipz.glms.mapper.PageResponseMapper;
 import com.jeipz.glms.model.Game;
 import com.jeipz.glms.model.Genre;
 import com.jeipz.glms.model.input.GenreInput;
+import com.jeipz.glms.model.response.PageResponse;
 import com.jeipz.glms.repository.GameRepository;
 import com.jeipz.glms.repository.GenreRepository;
 import com.jeipz.glms.validation.GenreValidator;
@@ -49,6 +51,9 @@ class GenreServiceImplTest {
     @Mock
     private GenreValidator genreValidator;
 
+    @Mock
+    private PageResponseMapper<Genre> pageResponseMapper;
+
     private List<Genre> createGenreList(int elemCount) {
         return IntStream.range(0, elemCount)
                 .mapToObj(i -> Genre.builder()
@@ -66,17 +71,25 @@ class GenreServiceImplTest {
         Pageable pageable = PageRequest.of(page, size, sort);
         List<Genre> genres = createGenreList(size);
         Page<Genre> genrePages = new PageImpl<>(genres);
+        PageResponse<Genre> genrePageResponses = new PageResponse<>(
+            genrePages.getContent(),
+            genrePages.getNumber() + 1,
+            genrePages.getTotalPages(),
+            genrePages.getTotalElements());
 
         when(genreRepository.findAll(pageable)).thenReturn(genrePages);
+        when(pageResponseMapper.apply(genrePages)).thenReturn(genrePageResponses);
 
-        Page<Genre> fetchedGenrePages = genreService.getAllGenres(page, size);
+        PageResponse<Genre> fetchedGenrePages = genreService.getAllGenres(page, size);
 
         assertAll("Should return pages of genre in ascending order",
-                () -> assertEquals(genrePages, fetchedGenrePages),
-                () -> assertEquals(page, fetchedGenrePages.getNumber()),
-                () -> assertEquals(size, fetchedGenrePages.getSize()));
+                () -> assertEquals(genrePageResponses.content(), fetchedGenrePages.content()),
+                () -> assertEquals(genrePageResponses.currentPage(), fetchedGenrePages.currentPage()),
+                () -> assertEquals(genrePageResponses.totalPages(), fetchedGenrePages.totalPages()),
+                () -> assertEquals(genrePageResponses.totalElements(), fetchedGenrePages.totalElements()));
 
         verify(genreRepository, times(1)).findAll(pageable);
+        verify(pageResponseMapper, times(1)).apply(genrePages);
     }
 
     @Test

@@ -3,7 +3,7 @@ type Mutation {
     addGame(gameInput: GameInput!): Game
     updateGame(id: ID!, gameInput: GameInput!): Game
     deleteGame(id: ID!): String
-#    # Genre
+    # Genre
     addGenre(genreInput: GenreInput!): Genre
     updateGenre(id: ID!, genreInput: GenreInput!): Genre
     deleteGenre(id: ID!): String

@@ -1,0 +1,6 @@
+type PageResponseOfGenre {
+    content: [Genre]!
+    currentPage: Int!
+    totalPages: Int!
+    totalElements: Int!
+}

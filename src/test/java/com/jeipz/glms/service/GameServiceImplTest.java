@@ -3,10 +3,12 @@ package com.jeipz.glms.service;
 import com.jeipz.glms.exception.GameAlreadyExistsException;
 import com.jeipz.glms.exception.GameNotFoundException;
 import com.jeipz.glms.mapper.GameMapper;
+import com.jeipz.glms.mapper.PageResponseMapper;
 import com.jeipz.glms.model.Game;
 import com.jeipz.glms.model.Genre;
 import com.jeipz.glms.model.Platform;
 import com.jeipz.glms.model.input.GameInput;
+import com.jeipz.glms.model.response.PageResponse;
 import com.jeipz.glms.repository.GameRepository;
 import com.jeipz.glms.repository.GenreRepository;
 import com.jeipz.glms.repository.PlatformRepository;
@@ -63,6 +65,9 @@ class GameServiceImplTest {
     @Mock
     private GameMapper gameMapper;
 
+    @Mock
+    private PageResponseMapper<Game> pageResponseMapper;
+
     private List<Game> createGameList() {
         return IntStream.range(0, SIZE)
                 .mapToObj(i -> Game.builder()
@@ -96,19 +101,29 @@ class GameServiceImplTest {
         Pageable pageable = PageRequest.of(PAGE, SIZE, SORT);
         List<Game> gameList = createGameList();
         Page<Game> gamePages = new PageImpl<>(gameList);
+        PageResponse<Game> gamePageResponse = new PageResponse<>(
+                gamePages.getContent(),
+                gamePages.getNumber() + 1,
+                gamePages.getTotalPages(),
+                gamePages.getTotalElements());
 
         when(gameRepository.findAll(pageable))
                 .thenReturn(gamePages);
+        when(pageResponseMapper.apply(gamePages))
+                .thenReturn(gamePageResponse);
 
-        Page<Game> fetchedGamePages = gameService.getAllGames(PAGE, SIZE);
+        PageResponse<Game> fetchedGamePages = gameService.getAllGames(PAGE, SIZE);
 
         assertAll("Should return pages of games",
-                () -> assertEquals(gamePages, fetchedGamePages),
-                () -> assertEquals(PAGE, fetchedGamePages.getNumber()),
-                () -> assertEquals(SIZE, fetchedGamePages.getSize()));
+                () -> assertEquals(gamePageResponse.content(), fetchedGamePages.content()),
+                () -> assertEquals(gamePageResponse.currentPage(), fetchedGamePages.currentPage()),
+                () -> assertEquals(gamePageResponse.totalPages(), fetchedGamePages.totalPages()),
+                () -> assertEquals(gamePageResponse.totalElements(), fetchedGamePages.totalElements()));
 
         verify(gameRepository, times(1))
                 .findAll(pageable);
+        verify(pageResponseMapper, times(1))
+                .apply(gamePages);
     }
 
     @Test

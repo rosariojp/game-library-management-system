@@ -1,10 +1,12 @@
 package com.jeipz.glms.service;
 
 import com.jeipz.glms.exception.PlatformNotFoundException;
+import com.jeipz.glms.mapper.PageResponseMapper;
 import com.jeipz.glms.mapper.PlatformMapper;
 import com.jeipz.glms.model.Game;
 import com.jeipz.glms.model.Platform;
 import com.jeipz.glms.model.input.PlatformInput;
+import com.jeipz.glms.model.response.PageResponse;
 import com.jeipz.glms.repository.GameRepository;
 import com.jeipz.glms.repository.PlatformRepository;
 import com.jeipz.glms.validation.PlatformValidator;
@@ -23,20 +25,23 @@ public class PlatformServiceImpl implements PlatformService {
     private final GameRepository gameRepository;
     private final PlatformMapper platformMapper;
     private final PlatformValidator platformValidator;
+    private final PageResponseMapper<Platform> pageResponseMapper;
 
-    public PlatformServiceImpl(PlatformRepository platformRepository, GameRepository gameRepository, PlatformMapper platformMapper, PlatformValidator platformValidator) {
+    public PlatformServiceImpl(PlatformRepository platformRepository, GameRepository gameRepository, PlatformMapper platformMapper, PlatformValidator platformValidator, PageResponseMapper<Platform> pageResponseMapper) {
         this.platformRepository = platformRepository;
         this.gameRepository = gameRepository;
         this.platformMapper = platformMapper;
         this.platformValidator = platformValidator;
+        this.pageResponseMapper = pageResponseMapper;
     }
 
     @Override
-    public Page<Platform> getAllPlatforms(int page, int size) {
+    public PageResponse<Platform> getAllPlatforms(int page, int size) {
         String field = "name";
         Sort sort = Sort.by(field).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        return platformRepository.findAll(pageable);
+        Page<Platform> pages = platformRepository.findAll(pageable);
+        return pageResponseMapper.apply(pages);
     }
 
     @Override

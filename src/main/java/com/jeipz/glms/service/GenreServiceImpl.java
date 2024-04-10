@@ -2,9 +2,11 @@ package com.jeipz.glms.service;
 
 import com.jeipz.glms.exception.GenreNotFoundException;
 import com.jeipz.glms.mapper.GenreMapper;
+import com.jeipz.glms.mapper.PageResponseMapper;
 import com.jeipz.glms.model.Game;
 import com.jeipz.glms.model.Genre;
 import com.jeipz.glms.model.input.GenreInput;
+import com.jeipz.glms.model.response.PageResponse;
 import com.jeipz.glms.repository.GameRepository;
 import com.jeipz.glms.repository.GenreRepository;
 import com.jeipz.glms.validation.GenreValidator;
@@ -22,21 +24,24 @@ public class GenreServiceImpl implements GenreService {
     private final GenreRepository genreRepository;
     private final GameRepository gameRepository;
     private final GenreMapper genreMapper;
+    private final PageResponseMapper<Genre> pageResponseMapper;
     private final GenreValidator genreValidator;
 
-    public GenreServiceImpl(GenreRepository genreRepository, GameRepository gameRepository, GenreMapper genreMapper, GenreValidator genreValidator) {
+    public GenreServiceImpl(GenreRepository genreRepository, GameRepository gameRepository, GenreMapper genreMapper, PageResponseMapper<Genre> pageResponseMapper, GenreValidator genreValidator) {
         this.genreRepository = genreRepository;
         this.gameRepository = gameRepository;
         this.genreMapper = genreMapper;
+        this.pageResponseMapper = pageResponseMapper;
         this.genreValidator = genreValidator;
     }
 
     @Override
-    public Page<Genre> getAllGenres(int page, int size) {
+    public PageResponse<Genre> getAllGenres(int page, int size) {
         String field = "name";
         Sort sort = Sort.by(field).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        return genreRepository.findAll(pageable);
+        Page<Genre> pages = genreRepository.findAll(pageable);
+        return pageResponseMapper.apply(pages);
     }
 
     @Override
