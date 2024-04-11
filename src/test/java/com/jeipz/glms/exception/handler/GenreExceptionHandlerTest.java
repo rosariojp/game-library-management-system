@@ -30,7 +30,7 @@ class GenreExceptionHandlerTest {
     private GenreService genreService;
 
     @Test
-    public void handleGameNotFoundException_test() {
+    public void handleGenreNotFoundException_test() {
         when(genreService.deleteGenre(any(UUID.class)))
                 .thenThrow(GenreNotFoundException.class);
 
@@ -48,7 +48,7 @@ class GenreExceptionHandlerTest {
     }
 
     @Test
-    public void handleGameAlreadyExistsException_test() {
+    public void handleGenreAlreadyExistsException_test() {
         GenreInput genreInput = new GenreInput("Genre Name");
 
         when(genreService.addGenre(genreInput))

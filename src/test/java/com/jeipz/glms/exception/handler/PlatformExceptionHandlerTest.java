@@ -30,7 +30,7 @@ class PlatformExceptionHandlerTest {
     private PlatformService platformService;
 
     @Test
-    public void handleGameNotFoundException_test() {
+    public void handlePlatformNotFoundException_test() {
         when(platformService.deletePlatform(any(UUID.class)))
                 .thenThrow(PlatformNotFoundException.class);
 
@@ -48,7 +48,7 @@ class PlatformExceptionHandlerTest {
     }
 
     @Test
-    public void handleGameAlreadyExistsException_test() {
+    public void handlePlatformAlreadyExistsException_test() {
         PlatformInput platformInput = new PlatformInput(
                 "Platform Name", "Platform Description");
 
