@@ -4,6 +4,7 @@ GraphQL API for Game Library Management
 - CRUD for Games
 - CRUD for Game Genres
 - CRUD for Game Platforms
+- 99% Line Coverage
 
 **Technologies:**
 1. Spring Boot
