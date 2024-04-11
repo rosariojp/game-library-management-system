@@ -16,8 +16,7 @@ public class GameValidator {
     public void validateTitle(String title) {
         gameRepository.findByTitle(title)
                 .ifPresent(platform -> {
-                    String message = "Game title already exists.";
-                    throw new GameAlreadyExistsException(message);
+                    throw new GameAlreadyExistsException();
                 });
     }
 

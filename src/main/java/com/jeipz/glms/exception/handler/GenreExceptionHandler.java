@@ -19,7 +19,7 @@ public class GenreExceptionHandler {
     @GraphQlExceptionHandler
     public GraphQLError handleGenreAlreadyExistsException(GenreAlreadyExistsException ex) {
         return GraphQLError.newError()
-                .message(ex.getMessage())
+                .message("Genre name already exists.")
                 .build();
     }
 

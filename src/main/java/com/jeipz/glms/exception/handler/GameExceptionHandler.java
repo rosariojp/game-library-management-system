@@ -19,7 +19,7 @@ public class GameExceptionHandler {
     @GraphQlExceptionHandler
     public GraphQLError handleGameAlreadyExistsException(GameAlreadyExistsException ex) {
         return GraphQLError.newError()
-                .message(ex.getMessage())
+                .message("Game title already exists.")
                 .build();
     }
 

@@ -16,8 +16,7 @@ public class GenreValidator {
     public void validateName(String name) {
         genreRepository.findByName(name)
                 .ifPresent(platform -> {
-                    String message = "Genre name already exists.";
-                    throw new GenreAlreadyExistsException(message);
+                    throw new GenreAlreadyExistsException();
                 });
     }
 

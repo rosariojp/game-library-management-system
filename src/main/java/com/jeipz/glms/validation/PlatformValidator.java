@@ -16,8 +16,7 @@ public class PlatformValidator {
     public void validateName(String name) {
         platformRepository.findByName(name)
                 .ifPresent(platform -> {
-                    String message = "Platform name already exists.";
-                    throw new PlatformAlreadyExistsException(message);
+                    throw new PlatformAlreadyExistsException();
                 });
     }
 

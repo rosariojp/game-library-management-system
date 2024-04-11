@@ -19,7 +19,7 @@ public class PlatformExceptionHandler {
     @GraphQlExceptionHandler
     public GraphQLError handlePlatformAlreadyExistsException(PlatformAlreadyExistsException ex) {
         return GraphQLError.newError()
-                .message(ex.getMessage())
+                .message("Platform name already exists.")
                 .build();
     }
 
